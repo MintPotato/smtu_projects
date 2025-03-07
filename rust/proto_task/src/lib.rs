@@ -1,16 +1,15 @@
-pub mod adressbook {
+pub mod addressbook {
     include!(concat!(env!("OUT_DIR"), "/_.rs"));
 }
 
-use std::fs;
+use std::{fs, time};
 use std::collections::HashMap;
 use std::error::Error;
 use std::io::{BufReader, Read, Write, BufWriter};
 use prost::Message;
 use prost_types::Timestamp;
-use std::time;
 
-const DB_FILE_PATH: &str = "adressbook.db";
+const DB_FILE_PATH: &str = "addressbook.db";
 
 pub struct Config {
     pub command: String,
@@ -71,15 +70,15 @@ fn open_db_file(file_path: &str) -> fs::File {
     .unwrap()
 }
 
-fn read_from_db(f: &mut fs::File) -> adressbook::AdressBook {
+fn read_from_db(f: &mut fs::File) -> addressbook::AddressBook {
     let mut buf_reader = BufReader::new(f);
     let mut contents = Vec::new();
 
     buf_reader.read_to_end(&mut contents).unwrap();
-    adressbook::AdressBook::decode(contents.as_slice()).unwrap()
+    addressbook::AddressBook::decode(contents.as_slice()).unwrap()
 }
 
-fn write_to_db(f: &mut fs::File, book: adressbook::AdressBook) {
+fn write_to_db(f: &mut fs::File, book: addressbook::AddressBook) {
     let mut buf_writer = BufWriter::new(f);
     let contents = book.encode_to_vec();
     buf_writer.write_all(&contents).unwrap();
@@ -103,10 +102,10 @@ fn str_to_deps(s: &str) -> i32 {
     }
 }
 
-fn redact_private_info(contact: &adressbook::Contact) -> adressbook::Contact {
+fn redact_private_info(contact: &addressbook::Contact) -> addressbook::Contact {
     
     match contact.kind.clone().unwrap() {
-        adressbook::contact::Kind::Person(person) => {
+        addressbook::contact::Kind::Person(person) => {
             let mut new_contact = contact.clone();
 
             let phones = person.clone().phones;
@@ -121,11 +120,11 @@ fn redact_private_info(contact: &adressbook::Contact) -> adressbook::Contact {
             }
 
             new_person.phones = new_phones;
-            new_contact.kind = Some(adressbook::contact::Kind::Person(new_person));
+            new_contact.kind = Some(addressbook::contact::Kind::Person(new_person));
 
             return new_contact          
         },
-        adressbook::contact::Kind::Company(company) => {
+        addressbook::contact::Kind::Company(company) => {
             let mut new_contact = contact.clone();
 
             let phones = company.clone().phones;
@@ -149,7 +148,7 @@ fn redact_private_info(contact: &adressbook::Contact) -> adressbook::Contact {
 
             new_company.phones = new_phones;
             new_company.emails = new_emails;
-            new_contact.kind = Some(adressbook::contact::Kind::Company(new_company));
+            new_contact.kind = Some(addressbook::contact::Kind::Company(new_company));
 
             return new_contact
         }
@@ -159,34 +158,34 @@ fn redact_private_info(contact: &adressbook::Contact) -> adressbook::Contact {
 
 fn add_person(f: &mut fs::File, name: &str, email: &str, phone: &str, phone_type: &str) {
     let mut book = read_from_db(f);
-    let mut person: adressbook::Person;
+    let mut person: addressbook::Person;
 
     if book.contacts.contains_key(name) {
         let kind = book.contacts.get(name).unwrap().kind.clone().unwrap();
 
         match kind {
-            adressbook::contact::Kind::Person(p) => {person = p},
-            adressbook::contact::Kind::Company(_) => {panic!("Company")}
+            addressbook::contact::Kind::Person(p) => {person = p},
+            addressbook::contact::Kind::Company(_) => {panic!("Company")}
         }
     }
     else {
-        person = adressbook::Person::default();
+        person = addressbook::Person::default();
     }
 
     person.email = email.to_string();
-    let mut nb = adressbook::person::PhoneNumber::default();
+    let mut nb = addressbook::person::PhoneNumber::default();
     nb.number = phone.to_string();
     nb.r#type = str_to_phone_type(phone_type);
     person.phones.push(nb);
 
-    let mut contact = adressbook::Contact::default();
+    let mut contact = addressbook::Contact::default();
     let mut update_ts = Timestamp::default();
     let duration = time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap();
     update_ts.seconds = duration.as_secs() as i64;
     update_ts.nanos = duration.subsec_nanos() as i32;
 
     contact.last_updated = Some(update_ts);
-    contact.kind = Some(adressbook::contact::Kind::Person(person));
+    contact.kind = Some(addressbook::contact::Kind::Person(person));
     book.contacts.insert(String::from(name), contact);
 
     write_to_db(f, book);
@@ -195,36 +194,36 @@ fn add_person(f: &mut fs::File, name: &str, email: &str, phone: &str, phone_type
 fn add_company(f: &mut fs::File, name: &str, email: &str, email_dep: &str, phone: &str, phone_dep: &str) {
     let mut book = read_from_db(f);
 
-    let mut company: adressbook::Company;
+    let mut company: addressbook::Company;
     if book.contacts.contains_key(name) {
-        let kind: adressbook::contact::Kind = book.contacts.get(name).unwrap().kind.clone().unwrap();
+        let kind: addressbook::contact::Kind = book.contacts.get(name).unwrap().kind.clone().unwrap();
         match kind {
-            adressbook::contact::Kind::Company(comp) => {company = comp},
-            adressbook::contact::Kind::Person(_) => {panic!("Person")}
+            addressbook::contact::Kind::Company(comp) => {company = comp},
+            addressbook::contact::Kind::Person(_) => {panic!("Person")}
         }
     }
     else {
-        company = adressbook::Company::default();
+        company = addressbook::Company::default();
     }
 
-    let mut addr = adressbook::company::EmailAdress::default();
+    let mut addr = addressbook::company::EmailAddress::default();
     addr.email = email.to_string();
     addr.department = str_to_deps(email_dep);
     company.emails.push(addr);
 
-    let mut nb = adressbook::company::PhoneNumber::default();
+    let mut nb = addressbook::company::PhoneNumber::default();
     nb.number = phone.to_string();
     nb.department = str_to_deps(phone_dep);
     company.phones.push(nb);
 
-    let mut contact = adressbook::Contact::default();
+    let mut contact = addressbook::Contact::default();
     let mut update_ts = Timestamp::default();
     let duration = time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap();
     update_ts.seconds = duration.as_secs() as i64;
     update_ts.nanos = duration.subsec_nanos() as i32;
 
     contact.last_updated = Some(update_ts);
-    contact.kind = Some(adressbook::contact::Kind::Company(company));
+    contact.kind = Some(addressbook::contact::Kind::Company(company));
     book.contacts.insert(String::from(name), contact);
 
     write_to_db(f, book);
