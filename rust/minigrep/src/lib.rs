@@ -52,7 +52,6 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
             results.push(line);
         }
     }
-
     return results;
 }
 
@@ -81,7 +80,7 @@ safe, fast, productive.
 Pick three.
 Duct tape";
 
-        assert_eq!(vec!["Duct tape"], search(query, contents))
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents))
     }
 
     #[test]
