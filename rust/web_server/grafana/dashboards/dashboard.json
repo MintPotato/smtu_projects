@@ -1,0 +1,250 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "P2DFC63C9D1CEA7A7"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 21,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-postgresql-datasource",
+              "uid": "P2DFC63C9D1CEA7A7"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "rawSql": "SELECT humidity, event_time FROM data ORDER BY event_time ASC LIMIT 50 ",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "humidity",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "event_time",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50,
+              "orderBy": {
+                "property": {
+                  "name": "event_time",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC",
+              "whereJsonTree": {
+                "children1": [
+                  {
+                    "id": "bbab9bb9-89ab-4cde-b012-31963989227c",
+                    "properties": {
+                      "field": "event_id",
+                      "fieldSrc": "field",
+                      "operator": "equal",
+                      "value": [
+                        null
+                      ],
+                      "valueSrc": [
+                        "value"
+                      ],
+                      "valueType": [
+                        "number"
+                      ]
+                    },
+                    "type": "rule"
+                  }
+                ],
+                "id": "a9b9bba8-0123-4456-b89a-b1963987ebae",
+                "type": "group"
+              }
+            },
+            "table": "data"
+          },
+          {
+            "datasource": {
+              "type": "grafana-postgresql-datasource",
+              "uid": "P2DFC63C9D1CEA7A7"
+            },
+            "editorMode": "builder",
+            "format": "table",
+            "hide": false,
+            "rawSql": "SELECT temperature, event_time FROM data ORDER BY event_time ASC LIMIT 50 ",
+            "refId": "B",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "temperature",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                },
+                {
+                  "parameters": [
+                    {
+                      "name": "event_time",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50,
+              "orderBy": {
+                "property": {
+                  "name": "event_time",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "orderByDirection": "ASC"
+            },
+            "table": "data"
+          }
+        ],
+        "title": "Panel Title",
+        "type": "timeseries"
+      }
+    ],
+    "preload": false,
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "New dashboard",
+    "uid": "ceizl8xa6kgsga",
+    "version": 2
+  }
