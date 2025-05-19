@@ -1,0 +1,8 @@
+# VID|CAM : PATH|INDEX
+# data_source = "VID:./videofiles/test-video.mp4"  
+data_source = "CAM:0"
+
+[robot]
+humidity = 69.0                 # f32
+temperature = 14.88              # f32
+robot_pos = [0.0, 0.0, 0.0]     # Vec<f32>
