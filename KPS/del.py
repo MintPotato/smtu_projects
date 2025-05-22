@@ -1,3 +1,5 @@
+from PIL import Image, ImageDraw, ImageFont
+
 def find_pos(grid, symbol):
     for y in range(len(grid)):
         for x in range(len(grid[0])):
@@ -9,12 +11,6 @@ def is_walkable(grid, x, y):
     if 0 <= x < len(grid[0]) and 0 <= y < len(grid):
         return grid[y][x] != 'x'
     return False
-
-def direction(x1, y1, x2, y2):
-    dx, dy = x2 - x1, y2 - y1
-    if dx != 0: dx = dx // abs(dx)
-    if dy != 0: dy = dy // abs(dy)
-    return (dx, dy)
 
 def get_successors(grid, node, goal):
     successors = []
@@ -125,7 +121,7 @@ def heuristic(a, b):
 def distance(a, b):
     dx = abs(a[0] - b[0])
     dy = abs(a[1] - b[1])
-    return dx + dy if (dx == 0 or dy == 0) else 1.414  # sqrt(2)
+    return 1 if (dx == 0 or dy == 0) else 1.4
 
 # Тестовая сетка
 grid = [
